@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # --- 1. MICROSERVICIO AUTH (Puerto 8081) ---
+  auth-db:
+    image: mysql:8
+    container_name: auth_db
+    environment:
+      MYSQL_DATABASE: auth_db
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - aventuraride-net
+    volumes:
+      - ./data/auth:/var/lib/mysql
+
+  auth-app:
+    build: ./services/auth
+    container_name: auth_app
+    ports:
+      - "8081:8080"
+    depends_on:
+      - auth-db
+    networks:
+      - aventuraride-net
+
+  # --- 2. MICROSERVICIO INVENTARIO (Puerto 8082) ---
+  inventario-db:
+    image: mysql:8
+    container_name: inventario_db
+    environment:
+      MYSQL_DATABASE: inventario_db
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - aventuraride-net
+    volumes:
+      - ./data/inventario:/var/lib/mysql
+
+  inventario-app:
+    build: ./services/inventario
+    container_name: inventario_app
+    ports:
+      - "8082:8080"
+    depends_on:
+      - inventario-db
+    networks:
+      - aventuraride-net
+
+  # --- 3. MICROSERVICIO CLIENTE (Puerto 8083) ---
+  cliente-db:
+    image: mysql:8
+    container_name: cliente_db
+    environment:
+      MYSQL_DATABASE: cliente_db
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - aventuraride-net
+    volumes:
+      - ./data/cliente:/var/lib/mysql
+
+  cliente-app:
+    build: ./services/cliente
+    container_name: cliente_app
+    ports:
+      - "8083:8080"
+    depends_on:
+      - cliente-db
+    networks:
+      - aventuraride-net
+
+  # --- 4. MICROSERVICIO RESERVA (Puerto 8084) ---
+  reserva-db:
+    image: mysql:8
+    container_name: reserva_db
+    environment:
+      MYSQL_DATABASE: reserva_db
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - aventuraride-net
+    volumes:
+      - ./data/reserva:/var/lib/mysql
+
+  reserva-app:
+    build: ./services/reserva
+    container_name: reserva_app
+    ports:
+      - "8084:8080"
+    depends_on:
+      - reserva-db
+    networks:
+      - aventuraride-net
+
+  # --- 5. MICROSERVICIO PAGO (Puerto 8085) ---
+  pago-db:
+    image: mysql:8
+    container_name: pago_db
+    environment:
+      MYSQL_DATABASE: pago_db
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - aventuraride-net
+    volumes:
+      - ./data/pago:/var/lib/mysql
+
+  pago-app:
+    build: ./services/pago
+    container_name: pago_app
+    ports:
+      - "8085:8080"
+    depends_on:
+      - pago-db
+    networks:
+      - aventuraride-net
+
+# Red única para que todos los microservicios se comuniquen
+networks:
+  aventuraride-net:
+    driver: bridge
